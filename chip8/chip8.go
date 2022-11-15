@@ -52,6 +52,7 @@ const (
 	OP_CALL_ADDR     = 0x2000_F000
 	OP_SE_VX_VAL     = 0x3000_F000
 	OP_LD_VX_VAL     = 0x6000_F000
+	OP_ADD_VX_VAL    = 0x7000_F000
 	OP_LD_I_ADDR     = 0xA000_F000
 	OP_DRW_VX_VY_SPR = 0xD000_F000
 	OP_SKP_VX        = 0xE09E_F0FF
@@ -126,6 +127,10 @@ func (c *chip8) Tick() error {
 		c.r[op.r1()] = op.val()
 
 		fmt.Printf("load %x %x\n", op.r1(), op.val())
+	} else if op.equal(OP_ADD_VX_VAL) {
+		c.r[op.r1()] += op.val()
+
+		fmt.Printf("adds %x %x\n", op.r1(), op.val())
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
 
