@@ -14,7 +14,7 @@ type Input interface {
 	Wait() Key
 }
 
-type chip8 struct {
+type Chip8 struct {
 	r [16]uint8
 	i uint16
 
@@ -31,8 +31,8 @@ type chip8 struct {
 	input Input
 }
 
-func NewChip8(rom io.Reader, i Input) (*chip8, error) {
-	c := new(chip8)
+func NewChip8(rom io.Reader, i Input) (*Chip8, error) {
+	c := new(Chip8)
 	_, err := rom.Read(c.m[0x0200:])
 	if err != nil {
 		return nil, fmt.Errorf("error loading rom: %v", err)
@@ -85,11 +85,11 @@ func (o opcode) val() uint8 {
 	return uint8(o & 0x00FF)
 }
 
-func (c *chip8) next() {
+func (c *Chip8) next() {
 	c.pc += 2
 }
 
-func (c *chip8) Tick() error {
+func (c *Chip8) Tick() error {
 
 	op := opcode(binary.BigEndian.Uint16(c.m[c.pc : c.pc+2]))
 	c.next()
@@ -168,4 +168,8 @@ func (c *chip8) Tick() error {
 	fmt.Printf("\t%02x %02x %02x %02x\n", c.r[0xC], c.r[0xD], c.r[0xE], c.r[0xF])
 
 	return nil
+}
+
+func (c *Chip8) FrameBuffer() []byte {
+	return c.fb[:]
 }
