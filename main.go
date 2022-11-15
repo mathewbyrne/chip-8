@@ -28,4 +28,9 @@ func main() {
 	c.Tick()
 	c.Tick()
 	c.Tick()
+	c.Tick()
+	c.Tick()
+	c.Tick()
+	c.Tick()
+	c.Tick()
 }

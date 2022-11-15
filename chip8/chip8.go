@@ -3,14 +3,16 @@ package chip8
 import (
 	"fmt"
 	"io"
+
+	"encoding/binary"
 )
 
 type chip8 struct {
 	r [16]byte
 	i uint16
 
-	stack [64]byte
-	sp    byte
+	stack [32]uint16
+	sp    uint8
 	pc    uint16
 
 	memory [4096]byte
@@ -32,17 +34,44 @@ func NewChip8(rom io.Reader) (*chip8, error) {
 	return c, nil
 }
 
+const (
+	OP_SYS  = 0x0000
+	OP_CLS  = 0x00E0
+	OP_RET  = 0x00EE
+	OP_JP   = 0x1000
+	OP_CALL = 0x2000
+	OP_LD   = 0x6000
+)
+
 func (c *chip8) Tick() error {
 
-	op := c.memory[c.pc : c.pc+2]
-	op1 := (op[0] >> 4) & 0x0F
-	op2 := (op[0] >> 0) & 0x0F
-	op3 := (op[1] >> 4) & 0x0F
-	op4 := (op[1] >> 0) & 0x0F
-
-	fmt.Printf("%x - %x%x%x%x\n", op, op1, op2, op3, op4)
-
+	op := binary.BigEndian.Uint16(c.memory[c.pc : c.pc+2])
 	c.pc += 2
+	fmt.Printf("<- %04x\n", op)
+
+	if op == OP_CLS {
+		fmt.Println("clear screen")
+	} else if op == OP_RET {
+		c.pc = c.stack[c.sp]
+		c.sp--
+		fmt.Println("return")
+	} else if (op & 0xF000) == OP_SYS {
+		fmt.Println("system")
+	} else if (op & 0xF000) == OP_JP {
+		fmt.Println("jump")
+	} else if (op & 0xF000) == OP_CALL {
+		c.sp++
+		c.stack[c.sp] = c.pc
+		c.pc = op & 0x0FFF
+
+		fmt.Printf("call %x\n", c.pc)
+	} else if (op & 0xF000) == OP_LD {
+		fmt.Printf("load %x %x\n", op&0x0F00>>8, op&0x00FF)
+	} else {
+		fmt.Printf("unrecognised opcode %x\n", op)
+	}
+
+	fmt.Printf("-> %04x\n", c.pc)
 
 	return nil
 }
