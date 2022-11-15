@@ -19,18 +19,14 @@ func main() {
 		return
 	}
 
-	c, err := chip8.NewChip8(f)
+	k := &Input{}
+
+	c, err := chip8.NewChip8(f, k)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 	}
 
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
-	c.Tick()
+	for {
+		c.Tick()
+	}
 }
