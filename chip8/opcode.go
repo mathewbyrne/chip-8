@@ -12,6 +12,7 @@ const (
 	OP_SNE_VX_BYTE      = 0x4000_F000
 	OP_LD_VX_BYTE       = 0x6000_F000
 	OP_ADD_VX_BYTE      = 0x7000_F000
+	OP_LD_VX_VY         = 0x8000_F00F
 	OP_ADD_VX_VY        = 0x8004_F00F
 	OP_LD_I_ADDR        = 0xA000_F000
 	OP_RND_VX_BYTE      = 0xC000_F000
@@ -74,6 +75,10 @@ func (op opcode) String() string {
 		return fmt.Sprintf("LD_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_ADD_VX_BYTE) {
 		return fmt.Sprintf("ADD_VX_BYTE %x %x", op.vx(), op.byte())
+	} else if op.equal(OP_LD_VX_VY) {
+		return fmt.Sprintf("LD_VX_VY %x %x", op.vx(), op.vy())
+	} else if op.equal(OP_ADD_VX_VY) {
+		return fmt.Sprintf("ADD_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {
 		return fmt.Sprintf("LD_I_ADD %x", op.addr())
 	} else if op.equal(OP_RND_VX_BYTE) {
