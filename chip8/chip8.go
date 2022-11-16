@@ -48,18 +48,21 @@ func (c *Chip8) next() {
 	c.pc += 2
 }
 
-func (c *Chip8) Tick() error {
-
-	op := opcode(binary.BigEndian.Uint16(c.m[c.pc : c.pc+2]))
-	fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
-
-	c.next()
+func (c *Chip8) Tick() {
 	if c.t > 0 {
 		c.t -= 1
 	}
 	if c.dt > 0 {
 		c.dt -= 1
 	}
+}
+
+func (c *Chip8) Cycle() {
+
+	op := opcode(binary.BigEndian.Uint16(c.m[c.pc : c.pc+2]))
+	fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
+
+	c.next()
 
 	if op.equal(OP_CLS) {
 		for i := range c.fb {
@@ -115,8 +118,6 @@ func (c *Chip8) Tick() error {
 	}
 
 	fmt.Printf("%s\n", c)
-
-	return nil
 }
 
 func (c *Chip8) String() string {

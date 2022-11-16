@@ -17,7 +17,10 @@ type FrameBuffer [FB_LEN]byte
 // draw 8 bit wide sprite at x, y position. out of bounds drawing wraps.
 // Drawing is done via XOR.  Returns true if any existing bits are set to 0.
 func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
-	fmt.Printf("draw %d %d\n", x, y)
+	// wrap these values if they themselves are outside the bounds
+	x = x % FB_WIDTH
+	y = y % FB_HEIGHT
+
 	var collision bool
 	li := (x >> 3) + (8 * y)
 	ri := li + 1
@@ -38,7 +41,8 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 			f[ri] = f[ri] ^ rs
 		}
 
-		// uint8 will have them wrap automatically back to the top
+		// uint8 will have them wrap automatically back to the opposite side in the correct position.  This isn't good programming,
+		// just a coincidence (or nice property I guess) of the size of the chip-8 framebuffer.
 		li += 8
 		ri += 8
 	}

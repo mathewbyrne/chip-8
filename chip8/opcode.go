@@ -67,7 +67,7 @@ func (op opcode) String() string {
 	} else if op.equal(OP_LD_I_ADDR) {
 		return fmt.Sprintf("LD I %x", op.addr())
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
-		return fmt.Sprintf("DRW %x %x %x\n", op.r1(), op.r2(), op.nibble())
+		return fmt.Sprintf("DRW %x %x %x", op.r1(), op.r2(), op.nibble())
 	} else if op.equal(OP_SKP_VX) {
 		return fmt.Sprintf("SKP %x", op.r1())
 	} else if op.equal(OP_SKNP_VX) {
