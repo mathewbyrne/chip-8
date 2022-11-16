@@ -26,8 +26,8 @@ type Chip8 struct {
 	m  [4096]byte
 	fb FrameBuffer
 
-	t  uint8
 	dt uint8
+	st uint8
 
 	input Input
 }
@@ -62,11 +62,11 @@ func (c *Chip8) carry(val bool) {
 }
 
 func (c *Chip8) Tick() {
-	if c.t > 0 {
-		c.t -= 1
-	}
 	if c.dt > 0 {
 		c.dt -= 1
+	}
+	if c.st > 0 {
+		c.st -= 1
 	}
 }
 
@@ -139,6 +139,8 @@ func (c *Chip8) Cycle() {
 		c.r[op.vx()] = c.dt
 	} else if op.equal(OP_LD_DT_VX) {
 		c.dt = c.r[op.vx()]
+	} else if op.equal(OP_LD_ST_VX) {
+		c.st = c.r[op.vx()]
 	} else if op.equal(OP_ADD_I_VX) {
 		c.i += uint16(c.r[op.vx()])
 	} else if op.equal(OP_LD_F_VX) {
@@ -219,10 +221,10 @@ func (c *Chip8) opLdBVx(vx uint8) {
 }
 
 func (c *Chip8) String() string {
-	return fmt.Sprintf(`pc:%04x sp: %02d i:%04x t: %02d dt: %02d
+	return fmt.Sprintf(`pc:%04x sp: %02d i:%04x dt: %02d st: %02d
 0:%02x 1:%02x 2:%02x 3:%02x 4:%02x 5:%02x 6:%02x 7:%02x 8:%02x 9:%02x A:%02x B:%02x C:%02x D:%02x E:%02x F:%02x
 `,
-		c.pc, c.sp, c.i, c.t, c.dt,
+		c.pc, c.sp, c.i, c.dt, c.st,
 		c.r[0x0], c.r[0x1], c.r[0x2], c.r[0x3],
 		c.r[0x4], c.r[0x5], c.r[0x6], c.r[0x7],
 		c.r[0x8], c.r[0x9], c.r[0xA], c.r[0xB],

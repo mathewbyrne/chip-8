@@ -28,6 +28,7 @@ const (
 	OP_SKNP_VX          uint = 0xE0A1_F0FF
 	OP_LD_VX_DT         uint = 0xF007_F0FF
 	OP_LD_DT_VX         uint = 0xF015_F0FF
+	OP_LD_ST_VX         uint = 0xF018_F0FF
 	OP_ADD_I_VX         uint = 0xF01E_F0FF
 	OP_LD_F_VX          uint = 0xF029_F0FF
 	OP_LD_B_VX          uint = 0xF033_F0FF
@@ -114,6 +115,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("LD_VX_DT %x", op.vx())
 	} else if op.equal(OP_LD_DT_VX) {
 		return fmt.Sprintf("LD_DT_VX %x", op.vx())
+	} else if op.equal(OP_LD_ST_VX) {
+		return fmt.Sprintf("LD_ST_VX %x", op.vx())
 	} else if op.equal(OP_ADD_I_VX) {
 		return fmt.Sprintf("ADD_I_VX %x", op.vx())
 	} else if op.equal(OP_LD_F_VX) {
