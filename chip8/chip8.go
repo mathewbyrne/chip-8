@@ -92,6 +92,8 @@ func (c *Chip8) Cycle() {
 		c.r[op.vx()] = op.byte()
 	} else if op.equal(OP_ADD_VX_BYTE) {
 		c.r[op.vx()] += op.byte()
+	} else if op.equal(OP_ADD_VX_VY) {
+		c.opAddVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
 	} else if op.equal(OP_RND_VX_BYTE) {
@@ -131,6 +133,15 @@ func (c *Chip8) Cycle() {
 	}
 
 	fmt.Printf("%s\n", c)
+}
+
+func (c *Chip8) opAddVxVy(vx, vy uint8) {
+	val := uint16(c.r[vx]) + uint16(c.r[vy])
+	c.r[0xF] = 0
+	if val > 0xFF {
+		c.r[0xF] = 1
+	}
+	c.r[vx] = uint8(val)
 }
 
 func (c *Chip8) opLdVxI(vx uint8) {

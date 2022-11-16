@@ -6,6 +6,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestOpAddVxVy(t *testing.T) {
+	c := Chip8{}
+	c.r[0] = 0xFE
+	c.r[1] = 1
+
+	c.opAddVxVy(0, 1)
+	require.EqualValues(t, 0xFF, c.r[0])
+	require.EqualValues(t, 0, c.r[0xF])
+
+	c.opAddVxVy(0, 1)
+	require.EqualValues(t, 0, c.r[0])
+	require.EqualValues(t, 1, c.r[0xF])
+}
+
 func TestOpLdVxI(t *testing.T) {
 	c := Chip8{}
 
