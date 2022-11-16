@@ -81,25 +81,25 @@ func (c *Chip8) Cycle() {
 		c.stack[c.sp] = c.pc
 		c.pc = op.addr()
 	} else if op.equal(OP_SE_VX_BYTE) {
-		if c.r[op.r1()] == op.byte() {
+		if c.r[op.vx()] == op.byte() {
 			c.next()
 		}
 	} else if op.equal(OP_SNE_VX_BYTE) {
-		if c.r[op.r1()] != op.byte() {
+		if c.r[op.vx()] != op.byte() {
 			c.next()
 		}
 	} else if op.equal(OP_LD_VX_BYTE) {
-		c.r[op.r1()] = op.byte()
+		c.r[op.vx()] = op.byte()
 	} else if op.equal(OP_ADD_VX_BYTE) {
-		c.r[op.r1()] += op.byte()
+		c.r[op.vx()] += op.byte()
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
 	} else if op.equal(OP_RND_VX_BYTE) {
-		c.r[op.r1()] = uint8(rand.Uint32()) ^ op.byte()
+		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
 
-		x := c.r[op.r1()]
-		y := c.r[op.r2()]
+		x := c.r[op.vx()]
+		y := c.r[op.vy()]
 		n := op.nibble()
 
 		c.r[0xF] = 0
@@ -109,24 +109,38 @@ func (c *Chip8) Cycle() {
 
 		fmt.Println(&c.fb)
 	} else if op.equal(OP_SKP_VX) {
-		if c.input.State(Key(c.r[op.r1()])) {
+		if c.input.State(Key(c.r[op.vx()])) {
 			c.next()
 		}
 	} else if op.equal(OP_SKNP_VX) {
-		if !c.input.State(Key(c.r[op.r1()])) {
+		if !c.input.State(Key(c.r[op.vx()])) {
 			c.next()
 		}
 	} else if op.equal(OP_LD_VX_DT) {
-		c.r[op.r1()] = c.dt
+		c.r[op.vx()] = c.dt
 	} else if op.equal(OP_LD_DT_VX) {
-		c.dt = c.r[op.r1()]
+		c.dt = c.r[op.vx()]
 	} else if op.equal(OP_ADD_I_VX) {
-		c.i += uint16(c.r[op.r1()])
+		c.i += uint16(c.r[op.vx()])
+	} else if op.equal(OP_LD_VX_I) {
+		c.opLdVxI(op.vx())
+	} else if op.equal(OP_LD_I_VX) {
+		c.opLdIVx(op.vx())
 	} else {
 		panic(fmt.Errorf("unrecognised opcode %x", op))
 	}
 
 	fmt.Printf("%s\n", c)
+}
+
+func (c *Chip8) opLdVxI(vx uint8) {
+	copy(c.m[c.i:], c.r[0:vx+1])
+	c.i += uint16(vx) + 1
+}
+
+func (c *Chip8) opLdIVx(vx uint8) {
+	copy(c.r[0:vx+1], c.m[c.i:])
+	c.i += uint16(vx) + 1
 }
 
 func (c *Chip8) String() string {

@@ -20,6 +20,8 @@ const (
 	OP_LD_VX_DT      = 0xF007_F0FF
 	OP_LD_DT_VX      = 0xF015_F0FF
 	OP_ADD_I_VX      = 0xF01E_F0FF
+	OP_LD_VX_I       = 0xF055_F0FF
+	OP_LD_I_VX       = 0xF065_F0FF
 )
 
 type opcode uint16
@@ -34,11 +36,11 @@ func (o opcode) addr() uint16 {
 	return uint16(o) & 0x0FFF
 }
 
-func (o opcode) r1() uint8 {
+func (o opcode) vx() uint8 {
 	return uint8(o & 0x0F00 >> 8)
 }
 
-func (o opcode) r2() uint8 {
+func (o opcode) vy() uint8 {
 	return uint8(o & 0x00F0 >> 4)
 }
 
@@ -62,29 +64,33 @@ func (op opcode) String() string {
 	} else if op.equal(OP_CALL_ADDR) {
 		return fmt.Sprintf("CALL %x", op.addr())
 	} else if op.equal(OP_SE_VX_BYTE) {
-		return fmt.Sprintf("SE %x %x", op.r1(), op.byte())
+		return fmt.Sprintf("SE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_SNE_VX_BYTE) {
-		return fmt.Sprintf("SNE %x %x", op.r1(), op.byte())
+		return fmt.Sprintf("SNE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_LD_VX_BYTE) {
-		return fmt.Sprintf("LD %x %x", op.r1(), op.byte())
+		return fmt.Sprintf("LD %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_ADD_VX_BYTE) {
-		return fmt.Sprintf("ADD %x %x", op.r1(), op.byte())
+		return fmt.Sprintf("ADD %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_LD_I_ADDR) {
 		return fmt.Sprintf("LD I %x", op.addr())
 	} else if op.equal(OP_RND_VX_BYTE) {
-		return fmt.Sprintf("RND %x %x", op.r1(), op.byte())
+		return fmt.Sprintf("RND %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
-		return fmt.Sprintf("DRW %x %x %x", op.r1(), op.r2(), op.nibble())
+		return fmt.Sprintf("DRW %x %x %x", op.vx(), op.vy(), op.nibble())
 	} else if op.equal(OP_SKP_VX) {
-		return fmt.Sprintf("SKP %x", op.r1())
+		return fmt.Sprintf("SKP %x", op.vx())
 	} else if op.equal(OP_SKNP_VX) {
-		return fmt.Sprintf("SKNP %x", op.r1())
+		return fmt.Sprintf("SKNP %x", op.vx())
 	} else if op.equal(OP_LD_VX_DT) {
-		return fmt.Sprintf("LD %x DT", op.r1())
+		return fmt.Sprintf("LD %x DT", op.vx())
 	} else if op.equal(OP_LD_DT_VX) {
-		return fmt.Sprintf("LD DT %x", op.r1())
+		return fmt.Sprintf("LD DT %x", op.vx())
 	} else if op.equal(OP_ADD_I_VX) {
-		return fmt.Sprintf("ADD I %x", op.r1())
+		return fmt.Sprintf("ADD I %x", op.vx())
+	} else if op.equal(OP_LD_VX_I) {
+		return fmt.Sprintf("LD %x [I]", op.vx())
+	} else if op.equal(OP_LD_I_VX) {
+		return fmt.Sprintf("LD [I] %x", op.vx())
 	} else {
 		panic(fmt.Errorf("unrecognised opcode %x", uint(op)))
 	}
