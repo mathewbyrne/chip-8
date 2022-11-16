@@ -3,26 +3,27 @@ package chip8
 import "fmt"
 
 const (
-	OP_SYS           = 0x0000_F000
-	OP_CLS           = 0x00E0_FFFF
-	OP_RET           = 0x00EE_FFFF
-	OP_JP_ADDR       = 0x1000_F000
-	OP_CALL_ADDR     = 0x2000_F000
-	OP_SE_VX_BYTE    = 0x3000_F000
-	OP_SNE_VX_BYTE   = 0x4000_F000
-	OP_LD_VX_BYTE    = 0x6000_F000
-	OP_ADD_VX_BYTE   = 0x7000_F000
-	OP_ADD_VX_VY     = 0x8004_F00F
-	OP_LD_I_ADDR     = 0xA000_F000
-	OP_RND_VX_BYTE   = 0xC000_F000
-	OP_DRW_VX_VY_SPR = 0xD000_F000
-	OP_SKP_VX        = 0xE09E_F0FF
-	OP_SKNP_VX       = 0xE0A1_F0FF
-	OP_LD_VX_DT      = 0xF007_F0FF
-	OP_LD_DT_VX      = 0xF015_F0FF
-	OP_ADD_I_VX      = 0xF01E_F0FF
-	OP_LD_VX_I       = 0xF055_F0FF
-	OP_LD_I_VX       = 0xF065_F0FF
+	OP_SYS              = 0x0000_F000
+	OP_CLS              = 0x00E0_FFFF
+	OP_RET              = 0x00EE_FFFF
+	OP_JP_ADDR          = 0x1000_F000
+	OP_CALL_ADDR        = 0x2000_F000
+	OP_SE_VX_BYTE       = 0x3000_F000
+	OP_SNE_VX_BYTE      = 0x4000_F000
+	OP_LD_VX_BYTE       = 0x6000_F000
+	OP_ADD_VX_BYTE      = 0x7000_F000
+	OP_ADD_VX_VY        = 0x8004_F00F
+	OP_LD_I_ADDR        = 0xA000_F000
+	OP_RND_VX_BYTE      = 0xC000_F000
+	OP_DRW_VX_VY_NIBBLE = 0xD000_F000
+	OP_SKP_VX           = 0xE09E_F0FF
+	OP_SKNP_VX          = 0xE0A1_F0FF
+	OP_LD_VX_DT         = 0xF007_F0FF
+	OP_LD_DT_VX         = 0xF015_F0FF
+	OP_ADD_I_VX         = 0xF01E_F0FF
+	OP_LD_B_VX          = 0xF033_F0FF
+	OP_LD_VX_I          = 0xF055_F0FF
+	OP_LD_I_VX          = 0xF065_F0FF
 )
 
 type opcode uint16
@@ -61,37 +62,39 @@ func (op opcode) String() string {
 	} else if op.equal(OP_SYS) {
 		return "SYS"
 	} else if op.equal(OP_JP_ADDR) {
-		return fmt.Sprintf("JP %x", op.addr())
+		return fmt.Sprintf("JP_ADDR %x", op.addr())
 	} else if op.equal(OP_CALL_ADDR) {
-		return fmt.Sprintf("CALL %x", op.addr())
+		return fmt.Sprintf("CALL_ADDR %x", op.addr())
 	} else if op.equal(OP_SE_VX_BYTE) {
-		return fmt.Sprintf("SE %x %x", op.vx(), op.byte())
+		return fmt.Sprintf("SE_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_SNE_VX_BYTE) {
-		return fmt.Sprintf("SNE %x %x", op.vx(), op.byte())
+		return fmt.Sprintf("SNE_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_LD_VX_BYTE) {
-		return fmt.Sprintf("LD %x %x", op.vx(), op.byte())
+		return fmt.Sprintf("LD_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_ADD_VX_BYTE) {
-		return fmt.Sprintf("ADD %x %x", op.vx(), op.byte())
+		return fmt.Sprintf("ADD_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_LD_I_ADDR) {
-		return fmt.Sprintf("LD I %x", op.addr())
+		return fmt.Sprintf("LD_I_ADD %x", op.addr())
 	} else if op.equal(OP_RND_VX_BYTE) {
-		return fmt.Sprintf("RND %x %x", op.vx(), op.byte())
-	} else if op.equal(OP_DRW_VX_VY_SPR) {
-		return fmt.Sprintf("DRW %x %x %x", op.vx(), op.vy(), op.nibble())
+		return fmt.Sprintf("RND_VX_BYTE %x %x", op.vx(), op.byte())
+	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
+		return fmt.Sprintf("DRW_VX_VY_NIBBLE %x %x %x", op.vx(), op.vy(), op.nibble())
 	} else if op.equal(OP_SKP_VX) {
-		return fmt.Sprintf("SKP %x", op.vx())
+		return fmt.Sprintf("SKP_VX %x", op.vx())
 	} else if op.equal(OP_SKNP_VX) {
-		return fmt.Sprintf("SKNP %x", op.vx())
+		return fmt.Sprintf("SKNP_VX %x", op.vx())
 	} else if op.equal(OP_LD_VX_DT) {
-		return fmt.Sprintf("LD %x DT", op.vx())
+		return fmt.Sprintf("LD_VX_DT %x", op.vx())
 	} else if op.equal(OP_LD_DT_VX) {
-		return fmt.Sprintf("LD DT %x", op.vx())
+		return fmt.Sprintf("LD_DT_VX %x", op.vx())
 	} else if op.equal(OP_ADD_I_VX) {
-		return fmt.Sprintf("ADD I %x", op.vx())
+		return fmt.Sprintf("ADD_I_VX %x", op.vx())
+	} else if op.equal(OP_LD_B_VX) {
+		return fmt.Sprintf("LD_B_VX %x", op.vx())
 	} else if op.equal(OP_LD_VX_I) {
-		return fmt.Sprintf("LD %x [I]", op.vx())
+		return fmt.Sprintf("LD_VX_I %x", op.vx())
 	} else if op.equal(OP_LD_I_VX) {
-		return fmt.Sprintf("LD [I] %x", op.vx())
+		return fmt.Sprintf("LD_I_VX %x", op.vx())
 	} else {
 		panic(fmt.Errorf("unrecognised opcode %x", uint(op)))
 	}

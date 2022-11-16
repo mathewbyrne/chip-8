@@ -98,7 +98,7 @@ func (c *Chip8) Cycle() {
 		c.i = op.addr()
 	} else if op.equal(OP_RND_VX_BYTE) {
 		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
-	} else if op.equal(OP_DRW_VX_VY_SPR) {
+	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
 
 		x := c.r[op.vx()]
 		y := c.r[op.vy()]
@@ -124,6 +124,8 @@ func (c *Chip8) Cycle() {
 		c.dt = c.r[op.vx()]
 	} else if op.equal(OP_ADD_I_VX) {
 		c.i += uint16(c.r[op.vx()])
+	} else if op.equal(OP_LD_B_VX) {
+		c.opLdBVx(op.vx())
 	} else if op.equal(OP_LD_VX_I) {
 		c.opLdVxI(op.vx())
 	} else if op.equal(OP_LD_I_VX) {
@@ -152,6 +154,12 @@ func (c *Chip8) opLdVxI(vx uint8) {
 func (c *Chip8) opLdIVx(vx uint8) {
 	copy(c.r[0:vx+1], c.m[c.i:])
 	c.i += uint16(vx) + 1
+}
+
+func (c *Chip8) opLdBVx(vx uint8) {
+	c.m[c.i+0] = (c.r[vx] / 100) % 10
+	c.m[c.i+1] = (c.r[vx] / 10) % 10
+	c.m[c.i+2] = c.r[vx] % 10
 }
 
 func (c *Chip8) String() string {

@@ -58,3 +58,20 @@ func TestOpLdIVx(t *testing.T) {
 	require.Equal(t, []byte{0x02, 0x03, 0x04, 0x00}, c.r[0:4])
 	require.EqualValues(t, 0x404, c.i)
 }
+
+func TestOpLdBVx(t *testing.T) {
+	c := Chip8{}
+	c.i = 0x200
+
+	c.r[4] = 9
+	c.opLdBVx(4)
+	require.Equal(t, []byte{0, 0, 9}, c.m[0x200:0x200+3])
+
+	c.r[4] = 123
+	c.opLdBVx(4)
+	require.Equal(t, []byte{1, 2, 3}, c.m[0x200:0x200+3])
+
+	c.r[4] = 255
+	c.opLdBVx(4)
+	require.Equal(t, []byte{2, 5, 5}, c.m[0x200:0x200+3])
+}
