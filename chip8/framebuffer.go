@@ -1,6 +1,9 @@
 package chip8
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	FB_WIDTH  uint8 = 64
@@ -25,18 +28,14 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 
 	for i := range sprite {
 
-		fmt.Printf("\tdraw %08b to (%d, %d) offset: %d\n", sprite[i], li, ri, offset)
-
 		ls := sprite[i] >> offset
 		collision = (f[li] & ls) > 0
 		f[li] = f[li] ^ ls
-		fmt.Printf("\tl sprite %08b\n", ls)
 
 		if offset > 0 {
 			rs := sprite[i] << (8 - offset)
 			collision = (f[ri] & rs) > 0
 			f[ri] = f[ri] ^ rs
-			fmt.Printf("\tr sprite %08b\n", rs)
 		}
 
 		// uint8 will have them wrap automatically back to the top
@@ -44,12 +43,13 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 		ri += 8
 	}
 
-	fmt.Println("< ====")
-	for y := 0; y < 32; y++ {
-		fmt.Printf("\t%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f[y*8], f[y*8+1], f[y*8+2], f[y*8+3], f[y*8+4], f[y*8+5], f[y*8+6], f[y*8+7])
-	}
-	fmt.Println("< ====")
-
-	fmt.Printf("collision: %t\n", collision)
 	return collision
+}
+
+func (f *FrameBuffer) String() string {
+	var sb strings.Builder
+	for y := 0; y < 32; y++ {
+		sb.Write([]byte(fmt.Sprintf("%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f[y*8], f[y*8+1], f[y*8+2], f[y*8+3], f[y*8+4], f[y*8+5], f[y*8+6], f[y*8+7])))
+	}
+	return sb.String()
 }
