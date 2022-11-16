@@ -23,7 +23,7 @@ type Chip8 struct {
 	pc    uint16
 
 	m  [4096]byte
-	fb [256]byte
+	fb FrameBuffer
 
 	t  uint8
 	dt uint8
@@ -85,6 +85,10 @@ func (o opcode) val() uint8 {
 	return uint8(o & 0x00FF)
 }
 
+func (o opcode) nibble() uint8 {
+	return uint8(o & 0x000F)
+}
+
 func (c *Chip8) next() {
 	c.pc += 2
 }
@@ -136,7 +140,14 @@ func (c *Chip8) Tick() error {
 
 		fmt.Printf("load I %x\n", op.addr())
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
-		fmt.Printf("draw\n")
+
+		x := c.r[op.r1()]
+		y := c.r[op.r2()]
+		n := op.nibble()
+
+		c.fb.draw(c.m[c.i:c.i+uint16(n)], x, y)
+
+		fmt.Printf("draw %x %x %x\n", x, y, n)
 	} else if op.equal(OP_SKP_VX) {
 		if c.input.State(Key(c.r[op.r1()])) {
 			c.next()

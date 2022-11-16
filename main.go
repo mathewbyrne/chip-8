@@ -55,7 +55,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%v", err)
 	}
 
-	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(640, 320)
 	ebiten.SetWindowTitle("Hello, World!")
 	if err := ebiten.RunGame(&Game{c}); err != nil {
 		log.Fatal(err)
