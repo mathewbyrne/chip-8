@@ -10,6 +10,7 @@ const (
 	OP_CALL_ADDR        uint = 0x2000_F000
 	OP_SE_VX_BYTE       uint = 0x3000_F000
 	OP_SNE_VX_BYTE      uint = 0x4000_F000
+	OP_SE_VX_VY         uint = 0x5000_F000 // not-implemented
 	OP_LD_VX_BYTE       uint = 0x6000_F000
 	OP_ADD_VX_BYTE      uint = 0x7000_F000
 	OP_LD_VX_VY         uint = 0x8000_F00F
@@ -21,12 +22,15 @@ const (
 	OP_SHR_VX           uint = 0x8006_F00F
 	OP_SUBN_VX_VY       uint = 0x8007_F00F
 	OP_SHL_VX           uint = 0x800E_F00F
+	OP_SNE_VX_VY        uint = 0x9000_F000 // not-implemented
 	OP_LD_I_ADDR        uint = 0xA000_F000
+	OP_JP_V0_ADDR       uint = 0xB000_F000 // not-implemented
 	OP_RND_VX_BYTE      uint = 0xC000_F000
 	OP_DRW_VX_VY_NIBBLE uint = 0xD000_F000
 	OP_SKP_VX           uint = 0xE09E_F0FF
 	OP_SKNP_VX          uint = 0xE0A1_F0FF
 	OP_LD_VX_DT         uint = 0xF007_F0FF
+	OP_LD_VX_K          uint = 0xF00A_F0FF // not-implemented
 	OP_LD_DT_VX         uint = 0xF015_F0FF
 	OP_LD_ST_VX         uint = 0xF018_F0FF
 	OP_ADD_I_VX         uint = 0xF01E_F0FF
@@ -79,6 +83,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("SE_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_SNE_VX_BYTE) {
 		return fmt.Sprintf("SNE_VX_BYTE %x %x", op.vx(), op.byte())
+	} else if op.equal(OP_SE_VX_VY) {
+		return fmt.Sprintf("SE_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_LD_VX_BYTE) {
 		return fmt.Sprintf("LD_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_ADD_VX_BYTE) {
@@ -101,8 +107,12 @@ func (op opcode) String() string {
 		return fmt.Sprintf("SUBN_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_SHL_VX) {
 		return fmt.Sprintf("SHL_VX %x %x", op.vx(), op.vy())
+	} else if op.equal(OP_SNE_VX_VY) {
+		return fmt.Sprintf("SNE_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {
 		return fmt.Sprintf("LD_I_ADD %x", op.addr())
+	} else if op.equal(OP_JP_V0_ADDR) {
+		return fmt.Sprintf("JP_V0_ADDR %x", op.addr())
 	} else if op.equal(OP_RND_VX_BYTE) {
 		return fmt.Sprintf("RND_VX_BYTE %x %x", op.vx(), op.byte())
 	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
@@ -113,6 +123,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("SKNP_VX %x", op.vx())
 	} else if op.equal(OP_LD_VX_DT) {
 		return fmt.Sprintf("LD_VX_DT %x", op.vx())
+	} else if op.equal(OP_LD_VX_K) {
+		return fmt.Sprintf("OP_LD_VX_K %x", op.vx())
 	} else if op.equal(OP_LD_DT_VX) {
 		return fmt.Sprintf("LD_DT_VX %x", op.vx())
 	} else if op.equal(OP_LD_ST_VX) {
