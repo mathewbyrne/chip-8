@@ -3,6 +3,7 @@ package chip8
 import (
 	"fmt"
 	"io"
+	"math/rand"
 
 	"encoding/binary"
 )
@@ -79,20 +80,22 @@ func (c *Chip8) Cycle() {
 		c.sp++
 		c.stack[c.sp] = c.pc
 		c.pc = op.addr()
-	} else if op.equal(OP_SE_VX_VAL) {
-		if c.r[op.r1()] == op.val() {
+	} else if op.equal(OP_SE_VX_BYTE) {
+		if c.r[op.r1()] == op.byte() {
 			c.next()
 		}
-	} else if op.equal(OP_SNE_VX_VAL) {
-		if c.r[op.r1()] != op.val() {
+	} else if op.equal(OP_SNE_VX_BYTE) {
+		if c.r[op.r1()] != op.byte() {
 			c.next()
 		}
-	} else if op.equal(OP_LD_VX_VAL) {
-		c.r[op.r1()] = op.val()
-	} else if op.equal(OP_ADD_VX_VAL) {
-		c.r[op.r1()] += op.val()
+	} else if op.equal(OP_LD_VX_BYTE) {
+		c.r[op.r1()] = op.byte()
+	} else if op.equal(OP_ADD_VX_BYTE) {
+		c.r[op.r1()] += op.byte()
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
+	} else if op.equal(OP_RND_VX_BYTE) {
+		c.r[op.r1()] = uint8(rand.Uint32()) ^ op.byte()
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
 
 		x := c.r[op.r1()]

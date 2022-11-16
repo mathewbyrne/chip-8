@@ -8,11 +8,12 @@ const (
 	OP_RET           = 0x00EE_FFFF
 	OP_JP_ADDR       = 0x1000_F000
 	OP_CALL_ADDR     = 0x2000_F000
-	OP_SE_VX_VAL     = 0x3000_F000
-	OP_SNE_VX_VAL    = 0x4000_F000
-	OP_LD_VX_VAL     = 0x6000_F000
-	OP_ADD_VX_VAL    = 0x7000_F000
+	OP_SE_VX_BYTE    = 0x3000_F000
+	OP_SNE_VX_BYTE   = 0x4000_F000
+	OP_LD_VX_BYTE    = 0x6000_F000
+	OP_ADD_VX_BYTE   = 0x7000_F000
 	OP_LD_I_ADDR     = 0xA000_F000
+	OP_RND_VX_BYTE   = 0xC000_F000
 	OP_DRW_VX_VY_SPR = 0xD000_F000
 	OP_SKP_VX        = 0xE09E_F0FF
 	OP_SKNP_VX       = 0xE0A1_F0FF
@@ -41,7 +42,7 @@ func (o opcode) r2() uint8 {
 	return uint8(o & 0x00F0 >> 4)
 }
 
-func (o opcode) val() uint8 {
+func (o opcode) byte() uint8 {
 	return uint8(o & 0x00FF)
 }
 
@@ -60,16 +61,18 @@ func (op opcode) String() string {
 		return fmt.Sprintf("JP %x", op.addr())
 	} else if op.equal(OP_CALL_ADDR) {
 		return fmt.Sprintf("CALL %x", op.addr())
-	} else if op.equal(OP_SE_VX_VAL) {
-		return fmt.Sprintf("SE %x %x", op.r1(), op.val())
-	} else if op.equal(OP_SNE_VX_VAL) {
-		return fmt.Sprintf("SNE %x %x", op.r1(), op.val())
-	} else if op.equal(OP_LD_VX_VAL) {
-		return fmt.Sprintf("LD %x %x", op.r1(), op.val())
-	} else if op.equal(OP_ADD_VX_VAL) {
-		return fmt.Sprintf("ADD %x %x", op.r1(), op.val())
+	} else if op.equal(OP_SE_VX_BYTE) {
+		return fmt.Sprintf("SE %x %x", op.r1(), op.byte())
+	} else if op.equal(OP_SNE_VX_BYTE) {
+		return fmt.Sprintf("SNE %x %x", op.r1(), op.byte())
+	} else if op.equal(OP_LD_VX_BYTE) {
+		return fmt.Sprintf("LD %x %x", op.r1(), op.byte())
+	} else if op.equal(OP_ADD_VX_BYTE) {
+		return fmt.Sprintf("ADD %x %x", op.r1(), op.byte())
 	} else if op.equal(OP_LD_I_ADDR) {
 		return fmt.Sprintf("LD I %x", op.addr())
+	} else if op.equal(OP_RND_VX_BYTE) {
+		return fmt.Sprintf("RND %x %x", op.r1(), op.byte())
 	} else if op.equal(OP_DRW_VX_VY_SPR) {
 		return fmt.Sprintf("DRW %x %x %x", op.r1(), op.r2(), op.nibble())
 	} else if op.equal(OP_SKP_VX) {
