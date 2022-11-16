@@ -34,6 +34,10 @@ type Chip8 struct {
 
 func NewChip8(rom io.Reader, i Input) (*Chip8, error) {
 	c := new(Chip8)
+
+	// font data occupies the first 80 bytes
+	copy(c.m[0:], fontData[:])
+
 	_, err := rom.Read(c.m[0x0200:])
 	if err != nil {
 		return nil, fmt.Errorf("error loading rom: %v", err)
@@ -124,6 +128,8 @@ func (c *Chip8) Cycle() {
 		c.dt = c.r[op.vx()]
 	} else if op.equal(OP_ADD_I_VX) {
 		c.i += uint16(c.r[op.vx()])
+	} else if op.equal(OP_LD_F_VX) {
+		c.opLdFVx(op.vx())
 	} else if op.equal(OP_LD_B_VX) {
 		c.opLdBVx(op.vx())
 	} else if op.equal(OP_LD_VX_I) {
@@ -154,6 +160,10 @@ func (c *Chip8) opLdVxI(vx uint8) {
 func (c *Chip8) opLdIVx(vx uint8) {
 	copy(c.r[0:vx+1], c.m[c.i:])
 	c.i += uint16(vx) + 1
+}
+
+func (c *Chip8) opLdFVx(vx uint8) {
+	c.i = uint16(c.r[vx]) * 5
 }
 
 func (c *Chip8) opLdBVx(vx uint8) {

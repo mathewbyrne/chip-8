@@ -21,6 +21,7 @@ const (
 	OP_LD_VX_DT         = 0xF007_F0FF
 	OP_LD_DT_VX         = 0xF015_F0FF
 	OP_ADD_I_VX         = 0xF01E_F0FF
+	OP_LD_F_VX          = 0xF029_F0FF
 	OP_LD_B_VX          = 0xF033_F0FF
 	OP_LD_VX_I          = 0xF055_F0FF
 	OP_LD_I_VX          = 0xF065_F0FF
@@ -89,6 +90,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("LD_DT_VX %x", op.vx())
 	} else if op.equal(OP_ADD_I_VX) {
 		return fmt.Sprintf("ADD_I_VX %x", op.vx())
+	} else if op.equal(OP_LD_F_VX) {
+		return fmt.Sprintf("LD_F_VX %x", op.vx())
 	} else if op.equal(OP_LD_B_VX) {
 		return fmt.Sprintf("LD_B_VX %x", op.vx())
 	} else if op.equal(OP_LD_VX_I) {
