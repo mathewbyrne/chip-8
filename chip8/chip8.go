@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"time"
 
 	"encoding/binary"
 )
@@ -30,6 +31,8 @@ type Chip8 struct {
 	st uint8
 
 	input Input
+
+	rnd rand.Rand
 }
 
 func NewChip8(rom io.Reader, i Input) (*Chip8, error) {
@@ -45,6 +48,8 @@ func NewChip8(rom io.Reader, i Input) (*Chip8, error) {
 
 	c.pc = 0x0200
 	c.input = i
+
+	c.rnd = *rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
 	return c, nil
 }
@@ -133,7 +138,7 @@ func (c *Chip8) Cycle() {
 	} else if op.equal(OP_JP_V0_ADDR) {
 		c.pc = op.addr() + uint16(c.r[0])
 	} else if op.equal(OP_RND_VX_BYTE) {
-		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
+		c.r[op.vx()] = uint8(c.rnd.Uint32()) & op.byte()
 	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
 		carry := c.fb.draw(c.m[c.i:c.i+uint16(op.nibble())], c.r[op.vx()], c.r[op.vy()])
 		c.carry(carry)

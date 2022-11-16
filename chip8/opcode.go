@@ -110,7 +110,7 @@ func (op opcode) String() string {
 	} else if op.equal(OP_SNE_VX_VY) {
 		return fmt.Sprintf("SNE_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {
-		return fmt.Sprintf("LD_I_ADD %x", op.addr())
+		return fmt.Sprintf("LD_I_ADDR %x", op.addr())
 	} else if op.equal(OP_JP_V0_ADDR) {
 		return fmt.Sprintf("JP_V0_ADDR %x", op.addr())
 	} else if op.equal(OP_RND_VX_BYTE) {
