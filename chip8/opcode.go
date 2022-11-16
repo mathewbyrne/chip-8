@@ -9,6 +9,7 @@ const (
 	OP_JP_ADDR       = 0x1000_F000
 	OP_CALL_ADDR     = 0x2000_F000
 	OP_SE_VX_VAL     = 0x3000_F000
+	OP_SNE_VX_VAL    = 0x4000_F000
 	OP_LD_VX_VAL     = 0x6000_F000
 	OP_ADD_VX_VAL    = 0x7000_F000
 	OP_LD_I_ADDR     = 0xA000_F000
@@ -17,6 +18,7 @@ const (
 	OP_SKNP_VX       = 0xE0A1_F0FF
 	OP_LD_VX_DT      = 0xF007_F0FF
 	OP_LD_DT_VX      = 0xF015_F0FF
+	OP_ADD_I_VX      = 0xF01E_F0FF
 )
 
 type opcode uint16
@@ -60,6 +62,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("CALL %x", op.addr())
 	} else if op.equal(OP_SE_VX_VAL) {
 		return fmt.Sprintf("SE %x %x", op.r1(), op.val())
+	} else if op.equal(OP_SNE_VX_VAL) {
+		return fmt.Sprintf("SNE %x %x", op.r1(), op.val())
 	} else if op.equal(OP_LD_VX_VAL) {
 		return fmt.Sprintf("LD %x %x", op.r1(), op.val())
 	} else if op.equal(OP_ADD_VX_VAL) {
@@ -76,6 +80,8 @@ func (op opcode) String() string {
 		return fmt.Sprintf("LD %x DT", op.r1())
 	} else if op.equal(OP_LD_DT_VX) {
 		return fmt.Sprintf("LD DT %x", op.r1())
+	} else if op.equal(OP_ADD_I_VX) {
+		return fmt.Sprintf("ADD I %x", op.r1())
 	} else {
 		panic(fmt.Errorf("unrecognised opcode %x", uint(op)))
 	}

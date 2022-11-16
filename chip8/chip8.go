@@ -83,6 +83,10 @@ func (c *Chip8) Cycle() {
 		if c.r[op.r1()] == op.val() {
 			c.next()
 		}
+	} else if op.equal(OP_SNE_VX_VAL) {
+		if c.r[op.r1()] != op.val() {
+			c.next()
+		}
 	} else if op.equal(OP_LD_VX_VAL) {
 		c.r[op.r1()] = op.val()
 	} else if op.equal(OP_ADD_VX_VAL) {
@@ -113,6 +117,8 @@ func (c *Chip8) Cycle() {
 		c.r[op.r1()] = c.dt
 	} else if op.equal(OP_LD_DT_VX) {
 		c.dt = c.r[op.r1()]
+	} else if op.equal(OP_ADD_I_VX) {
+		c.i += uint16(c.r[op.r1()])
 	} else {
 		panic(fmt.Errorf("unrecognised opcode %x", op))
 	}
