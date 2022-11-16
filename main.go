@@ -29,26 +29,28 @@ func (g *Game) Update() error {
 		g.paused = !g.paused
 	}
 
+	if g.paused && inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		fmt.Printf("%s\n", g.c.FrameBuffer())
+	}
+
 	return nil
 }
 
 var pixel = [4]byte{0xFF, 0xFF, 0xFF, 0xFF}
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if !g.paused {
-		var buff [4 * 64 * 32]byte
-		fb := g.c.FrameBuffer()
-		for i := range fb {
-			for j := 0; j < 8; j++ {
-				if fb[i]>>j&0x1 == 0x1 {
-					copy(buff[32*i+4*(7-j):], pixel[:])
+	var buff [4 * 64 * 32]byte
+	fb := g.c.FrameBuffer()
+	for i := range fb {
+		for j := 0; j < 8; j++ {
+			if fb[i]>>j&0x1 == 0x1 {
+				copy(buff[32*i+4*(7-j):], pixel[:])
 
-				}
 			}
 		}
-
-		screen.WritePixels(buff[:])
 	}
+
+	screen.WritePixels(buff[:])
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

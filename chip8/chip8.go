@@ -103,7 +103,7 @@ func (c *Chip8) Cycle() {
 	} else if op.equal(OP_ADD_VX_BYTE) {
 		c.r[op.vx()] += op.byte()
 	} else if op.equal(OP_LD_VX_VY) {
-		c.opLdVxVy(op.vx(), op.vx())
+		c.opLdVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_AND_VX_VY) {
 		c.opAndVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_ADD_VX_VY) {
@@ -190,6 +190,6 @@ func (c *Chip8) String() string {
 	)
 }
 
-func (c *Chip8) FrameBuffer() []byte {
-	return c.fb[:]
+func (c *Chip8) FrameBuffer() FrameBuffer {
+	return c.fb
 }

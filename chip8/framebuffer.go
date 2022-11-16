@@ -56,7 +56,7 @@ func (f *FrameBuffer) clear() {
 	}
 }
 
-func (f *FrameBuffer) String() string {
+func (f FrameBuffer) String() string {
 	var sb strings.Builder
 	for y := 0; y < 32; y++ {
 		sb.Write([]byte(fmt.Sprintf("%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f[y*8], f[y*8+1], f[y*8+2], f[y*8+3], f[y*8+4], f[y*8+5], f[y*8+6], f[y*8+7])))
