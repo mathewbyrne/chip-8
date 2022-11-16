@@ -113,7 +113,7 @@ func (c *Chip8) Cycle() {
 	} else if op.equal(OP_RND_VX_BYTE) {
 		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
 	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
-		carry := c.fb.draw(c.m[c.i:c.i+uint16(op.nibble())], op.vx(), op.vy())
+		carry := c.fb.draw(c.m[c.i:c.i+uint16(op.nibble())], c.r[op.vx()], c.r[op.vy()])
 		c.carry(carry)
 	} else if op.equal(OP_SKP_VX) {
 		if c.input.State(Key(c.r[op.vx()])) {

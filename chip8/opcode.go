@@ -13,7 +13,7 @@ const (
 	OP_LD_VX_BYTE       = 0x6000_F000
 	OP_ADD_VX_BYTE      = 0x7000_F000
 	OP_LD_VX_VY         = 0x8000_F00F
-	OP_AND_VX_VY        = 0x8004_F00F
+	OP_AND_VX_VY        = 0x8002_F00F
 	OP_ADD_VX_VY        = 0x8004_F00F
 	OP_LD_I_ADDR        = 0xA000_F000
 	OP_RND_VX_BYTE      = 0xC000_F000
