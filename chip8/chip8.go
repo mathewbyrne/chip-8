@@ -204,7 +204,7 @@ func (c *Chip8) opSubVxVy(vx, vy uint8) {
 
 func (c *Chip8) opShrVx(vx uint8) {
 	c.carry(c.r[vx]&0x01 == 0x01)
-	c.r[vx] >>= 2
+	c.r[vx] >>= 1
 }
 
 func (c *Chip8) opSubnVxVy(vx, vy uint8) {
@@ -214,7 +214,7 @@ func (c *Chip8) opSubnVxVy(vx, vy uint8) {
 
 func (c *Chip8) opShlVx(vx uint8) {
 	c.carry(c.r[vx]&0x80 == 0x80)
-	c.r[vx] <<= 2
+	c.r[vx] <<= 1
 }
 
 func (c *Chip8) opLdVxI(vx uint8) {
