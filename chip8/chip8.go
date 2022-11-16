@@ -104,10 +104,22 @@ func (c *Chip8) Cycle() {
 		c.r[op.vx()] += op.byte()
 	} else if op.equal(OP_LD_VX_VY) {
 		c.opLdVxVy(op.vx(), op.vy())
+	} else if op.equal(OP_OR_VX_VY) {
+		c.opOrVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_AND_VX_VY) {
 		c.opAndVxVy(op.vx(), op.vy())
+	} else if op.equal(OP_XOR_VX_VY) {
+		c.opXorVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_ADD_VX_VY) {
 		c.opAddVxVy(op.vx(), op.vy())
+	} else if op.equal(OP_SUB_VX_VY) {
+		c.opSubVxVy(op.vx(), op.vy())
+	} else if op.equal(OP_SHR_VX) {
+		c.opShrVx(op.vx())
+	} else if op.equal(OP_SUBN_VX_VY) {
+		c.opSubnVxVy(op.vx(), op.vy())
+	} else if op.equal(OP_SHL_VX) {
+		c.opShlVx(op.vx())
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
 	} else if op.equal(OP_RND_VX_BYTE) {
@@ -148,14 +160,42 @@ func (c *Chip8) opLdVxVy(vx, vy uint8) {
 	c.r[vx] = c.r[vy]
 }
 
+func (c *Chip8) opOrVxVy(vx, vy uint8) {
+	c.r[vx] |= c.r[vy]
+}
+
 func (c *Chip8) opAndVxVy(vx, vy uint8) {
 	c.r[vx] &= c.r[vy]
+}
+
+func (c *Chip8) opXorVxVy(vx, vy uint8) {
+	c.r[vx] ^= c.r[vy]
 }
 
 func (c *Chip8) opAddVxVy(vx, vy uint8) {
 	val := uint16(c.r[vx]) + uint16(c.r[vy])
 	c.carry(val > 0xFF)
 	c.r[vx] = uint8(val)
+}
+
+func (c *Chip8) opSubVxVy(vx, vy uint8) {
+	c.carry(c.r[vx] > c.r[vy])
+	c.r[vx] -= c.r[vy]
+}
+
+func (c *Chip8) opShrVx(vx uint8) {
+	c.carry(c.r[vx]&0x01 == 0x01)
+	c.r[vx] >>= 2
+}
+
+func (c *Chip8) opSubnVxVy(vx, vy uint8) {
+	c.carry(c.r[vy] > c.r[vx])
+	c.r[vx] = c.r[vy] - c.r[vx]
+}
+
+func (c *Chip8) opShlVx(vx uint8) {
+	c.carry(c.r[vx]&0x80 == 0x80)
+	c.r[vx] <<= 2
 }
 
 func (c *Chip8) opLdVxI(vx uint8) {
