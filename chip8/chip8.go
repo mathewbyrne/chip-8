@@ -98,6 +98,10 @@ func (c *Chip8) Cycle() {
 		if c.r[op.vx()] != op.byte() {
 			c.next()
 		}
+	} else if op.equal(OP_SE_VX_VY) {
+		if c.r[op.vx()] == c.r[op.vy()] {
+			c.next()
+		}
 	} else if op.equal(OP_LD_VX_BYTE) {
 		c.r[op.vx()] = op.byte()
 	} else if op.equal(OP_ADD_VX_BYTE) {
@@ -120,8 +124,14 @@ func (c *Chip8) Cycle() {
 		c.opSubnVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_SHL_VX) {
 		c.opShlVx(op.vx())
+	} else if op.equal(OP_SNE_VX_VY) {
+		if c.r[op.vx()] != c.r[op.vy()] {
+			c.next()
+		}
 	} else if op.equal(OP_LD_I_ADDR) {
 		c.i = op.addr()
+	} else if op.equal(OP_JP_V0_ADDR) {
+		c.pc = op.addr() + uint16(c.r[0])
 	} else if op.equal(OP_RND_VX_BYTE) {
 		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
 	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
@@ -137,6 +147,8 @@ func (c *Chip8) Cycle() {
 		}
 	} else if op.equal(OP_LD_VX_DT) {
 		c.r[op.vx()] = c.dt
+	} else if op.equal(OP_LD_VX_K) {
+		c.r[op.vx()] = uint8(c.input.Wait()) // only blocking call
 	} else if op.equal(OP_LD_DT_VX) {
 		c.dt = c.r[op.vx()]
 	} else if op.equal(OP_LD_ST_VX) {
