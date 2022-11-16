@@ -50,6 +50,12 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 	return collision
 }
 
+func (f *FrameBuffer) clear() {
+	for i := range f {
+		f[i] = 0
+	}
+}
+
 func (f *FrameBuffer) String() string {
 	var sb strings.Builder
 	for y := 0; y < 32; y++ {

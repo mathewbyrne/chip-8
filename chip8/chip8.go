@@ -53,6 +53,14 @@ func (c *Chip8) next() {
 	c.pc += 2
 }
 
+func (c *Chip8) carry(val bool) {
+	if val {
+		c.r[0xF] = 1
+	} else {
+		c.r[0xF] = 0
+	}
+}
+
 func (c *Chip8) Tick() {
 	if c.t > 0 {
 		c.t -= 1
@@ -70,9 +78,7 @@ func (c *Chip8) Cycle() {
 	c.next()
 
 	if op.equal(OP_CLS) {
-		for i := range c.fb {
-			c.fb[i] = 0
-		}
+		c.fb.clear()
 	} else if op.equal(OP_RET) {
 		c.pc = c.stack[c.sp]
 		c.sp--
@@ -98,6 +104,8 @@ func (c *Chip8) Cycle() {
 		c.r[op.vx()] += op.byte()
 	} else if op.equal(OP_LD_VX_VY) {
 		c.opLdVxVy(op.vx(), op.vx())
+	} else if op.equal(OP_AND_VX_VY) {
+		c.opAndVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_ADD_VX_VY) {
 		c.opAddVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {
@@ -105,17 +113,8 @@ func (c *Chip8) Cycle() {
 	} else if op.equal(OP_RND_VX_BYTE) {
 		c.r[op.vx()] = uint8(rand.Uint32()) ^ op.byte()
 	} else if op.equal(OP_DRW_VX_VY_NIBBLE) {
-
-		x := c.r[op.vx()]
-		y := c.r[op.vy()]
-		n := op.nibble()
-
-		c.r[0xF] = 0
-		if c.fb.draw(c.m[c.i:c.i+uint16(n)], x, y) {
-			c.r[0xF] = 1
-		}
-
-		fmt.Println(&c.fb)
+		carry := c.fb.draw(c.m[c.i:c.i+uint16(op.nibble())], op.vx(), op.vy())
+		c.carry(carry)
 	} else if op.equal(OP_SKP_VX) {
 		if c.input.State(Key(c.r[op.vx()])) {
 			c.next()
@@ -149,12 +148,13 @@ func (c *Chip8) opLdVxVy(vx, vy uint8) {
 	c.r[vx] = c.r[vy]
 }
 
+func (c *Chip8) opAndVxVy(vx, vy uint8) {
+	c.r[vx] &= c.r[vy]
+}
+
 func (c *Chip8) opAddVxVy(vx, vy uint8) {
 	val := uint16(c.r[vx]) + uint16(c.r[vy])
-	c.r[0xF] = 0
-	if val > 0xFF {
-		c.r[0xF] = 1
-	}
+	c.carry(val > 0xFF)
 	c.r[vx] = uint8(val)
 }
 
