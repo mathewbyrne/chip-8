@@ -41,7 +41,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		for i := range fb {
 			for j := 0; j < 8; j++ {
 				if fb[i]>>j&0x1 == 0x1 {
-					copy(buff[32*i+4*(8-j):], pixel[:])
+					copy(buff[32*i+4*(7-j):], pixel[:])
+
 				}
 			}
 		}
