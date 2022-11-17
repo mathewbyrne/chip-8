@@ -21,5 +21,5 @@ func TestFrameBufferCornerEdgeCase(t *testing.T) {
 	// draw sprite precisely in the corner
 	fb.draw(spr, 60, 29)
 
-	require.EqualValues(t, 0b00001001, fb[255])
+	require.EqualValues(t, 0b00001001, fb.b[255])
 }

@@ -3,6 +3,7 @@ package chip8
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
 
 const (
@@ -12,11 +13,17 @@ const (
 )
 
 // 1 bit per pixel
-type FrameBuffer [FB_LEN]byte
+type FrameBuffer struct {
+	b   [FB_LEN]byte
+	mut sync.Mutex
+}
 
 // draw 8 bit wide sprite at x, y position. out of bounds drawing wraps.
 // Drawing is done via XOR.  Returns true if any existing bits are set to 0.
 func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
+	f.mut.Lock()
+	defer f.mut.Unlock()
+
 	// wrap these values if they themselves are outside the bounds
 	x = x % FB_WIDTH
 	y = y % FB_HEIGHT
@@ -33,16 +40,16 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 
 		ls := sprite[i] >> offset
 		if !collision {
-			collision = (f[li] & ls) > 0
+			collision = (f.b[li] & ls) > 0
 		}
-		f[li] = f[li] ^ ls
+		f.b[li] = f.b[li] ^ ls
 
 		if offset > 0 {
 			rs := sprite[i] << (8 - offset)
 			if !collision {
-				collision = (f[ri] & rs) > 0
+				collision = (f.b[ri] & rs) > 0
 			}
-			f[ri] = f[ri] ^ rs
+			f.b[ri] = f.b[ri] ^ rs
 		}
 
 		// uint8 will have them wrap automatically back to the opposite side in the correct position.  This isn't good programming,
@@ -55,15 +62,25 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 }
 
 func (f *FrameBuffer) clear() {
-	for i := range f {
-		f[i] = 0
+	f.mut.Lock()
+	defer f.mut.Unlock()
+	for i := range f.b {
+		f.b[i] = 0
 	}
 }
 
-func (f FrameBuffer) String() string {
+func (f *FrameBuffer) Data() []byte {
+	f.mut.Lock()
+	defer f.mut.Unlock()
+	return f.b[:]
+}
+
+func (f *FrameBuffer) String() string {
+	f.mut.Lock()
+	defer f.mut.Unlock()
 	var sb strings.Builder
 	for y := 0; y < 32; y++ {
-		sb.Write([]byte(fmt.Sprintf("%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f[y*8], f[y*8+1], f[y*8+2], f[y*8+3], f[y*8+4], f[y*8+5], f[y*8+6], f[y*8+7])))
+		sb.Write([]byte(fmt.Sprintf("%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f.b[y*8], f.b[y*8+1], f.b[y*8+2], f.b[y*8+3], f.b[y*8+4], f.b[y*8+5], f.b[y*8+6], f.b[y*8+7])))
 	}
 	return sb.String()
 }

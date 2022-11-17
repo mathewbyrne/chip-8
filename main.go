@@ -46,9 +46,9 @@ var pixel = [4]byte{0xFF, 0xFF, 0xFF, 0xFF}
 func (g *Game) Draw(screen *ebiten.Image) {
 	var buff [4 * 64 * 32]byte
 	fb := g.c.FrameBuffer()
-	for i := range fb {
+	for i, b := range fb.Data() {
 		for j := 0; j < 8; j++ {
-			if fb[i]>>j&0x1 == 0x1 {
+			if (b>>j)&0x1 == 0x1 {
 				copy(buff[32*i+4*(7-j):], pixel[:])
 
 			}
@@ -77,6 +77,7 @@ func main() {
 	k := &Input{}
 
 	c, err := chip8.NewChip8(f, k)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 	}

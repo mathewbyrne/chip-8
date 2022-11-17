@@ -25,7 +25,7 @@ type Chip8 struct {
 	pc    uint16
 
 	m  [4096]byte
-	fb FrameBuffer
+	fb *FrameBuffer
 
 	dt uint8
 	st uint8
@@ -48,6 +48,8 @@ func NewChip8(rom io.Reader, i Input) (*Chip8, error) {
 
 	c.pc = 0x0200
 	c.input = i
+
+	c.fb = &FrameBuffer{}
 
 	c.rnd = *rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
@@ -249,6 +251,6 @@ func (c *Chip8) String() string {
 	)
 }
 
-func (c *Chip8) FrameBuffer() FrameBuffer {
+func (c *Chip8) FrameBuffer() *FrameBuffer {
 	return c.fb
 }
