@@ -14,8 +14,9 @@ const (
 
 // 1 bit per pixel
 type FrameBuffer struct {
-	b   [FB_LEN]byte
-	mut sync.Mutex
+	b     [FB_LEN]byte
+	mut   sync.Mutex
+	dirty bool
 }
 
 // draw 8 bit wide sprite at x, y position. out of bounds drawing wraps.
@@ -23,6 +24,8 @@ type FrameBuffer struct {
 func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 	f.mut.Lock()
 	defer f.mut.Unlock()
+
+	f.dirty = true
 
 	// wrap these values if they themselves are outside the bounds
 	x = x % FB_WIDTH
@@ -64,6 +67,7 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 func (f *FrameBuffer) clear() {
 	f.mut.Lock()
 	defer f.mut.Unlock()
+	f.dirty = true
 	for i := range f.b {
 		f.b[i] = 0
 	}
@@ -83,4 +87,12 @@ func (f *FrameBuffer) String() string {
 		sb.Write([]byte(fmt.Sprintf("%08b|%08b|%08b|%08b|%08b|%08b|%08b|%08b\n", f.b[y*8], f.b[y*8+1], f.b[y*8+2], f.b[y*8+3], f.b[y*8+4], f.b[y*8+5], f.b[y*8+6], f.b[y*8+7])))
 	}
 	return sb.String()
+}
+
+func (f *FrameBuffer) Dirty() bool {
+	f.mut.Lock()
+	defer f.mut.Unlock()
+	d := f.dirty
+	f.dirty = false
+	return d
 }
