@@ -32,12 +32,16 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 	for i := range sprite {
 
 		ls := sprite[i] >> offset
-		collision = (f[li] & ls) > 0
+		if !collision {
+			collision = (f[li] & ls) > 0
+		}
 		f[li] = f[li] ^ ls
 
 		if offset > 0 {
 			rs := sprite[i] << (8 - offset)
-			collision = (f[ri] & rs) > 0
+			if !collision {
+				collision = (f[ri] & rs) > 0
+			}
 			f[ri] = f[ri] ^ rs
 		}
 

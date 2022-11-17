@@ -25,6 +25,11 @@ func (g *Game) Update() error {
 		}
 	}
 
+	if g.paused && inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		// no tick :/
+		g.c.Cycle()
+	}
+
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		g.paused = !g.paused
 	}
