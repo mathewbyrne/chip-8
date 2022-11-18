@@ -77,10 +77,9 @@ func (c *Chip8) Tick() {
 	}
 }
 
-func (c *Chip8) Cycle() {
+func (c *Chip8) Cycle() opcode {
 
 	op := opcode(binary.BigEndian.Uint16(c.m[c.pc : c.pc+2]))
-	fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
 
 	c.next()
 
@@ -174,7 +173,7 @@ func (c *Chip8) Cycle() {
 		panic(fmt.Errorf("unrecognised opcode %x", op))
 	}
 
-	fmt.Printf("%s\n", c)
+	return op
 }
 
 func (c *Chip8) opLdVxVy(vx, vy uint8) {
