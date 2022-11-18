@@ -91,6 +91,7 @@ func runChip8(c *chip8.Chip8) {
 		case <-timers:
 			c.Tick()
 		case <-cycle:
+			// default:
 			c.Cycle()
 		}
 	}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/mathewbyrne/chip-8/chip8"
 )
@@ -31,5 +33,14 @@ func (i *Input) State(k chip8.Key) bool {
 }
 
 func (i *Input) Wait() chip8.Key {
-	panic("not implemented")
+	ticker := time.NewTicker(time.Microsecond * 17) // ~60Hz poll
+	defer ticker.Stop()
+	for {
+		<-ticker.C
+		for k := range keyMap {
+			if ebiten.IsKeyPressed(keyMap[k]) {
+				return k
+			}
+		}
+	}
 }
