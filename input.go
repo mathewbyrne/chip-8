@@ -10,22 +10,26 @@ import (
 type Input struct{}
 
 var keyMap = map[chip8.Key]ebiten.Key{
-	0x0: ebiten.Key0,
+	// Row 1
 	0x1: ebiten.Key1,
-	0x2: ebiten.KeyArrowUp,
+	0x2: ebiten.Key2,
 	0x3: ebiten.Key3,
-	0x4: ebiten.KeyArrowLeft,
-	0x5: ebiten.Key4,
-	0x6: ebiten.KeyArrowRight,
-	0x7: ebiten.Key7,
-	0x8: ebiten.KeyArrowDown,
-	0x9: ebiten.Key9,
-	0xA: ebiten.KeyA,
-	0xB: ebiten.KeyB,
-	0xC: ebiten.KeyC,
-	0xD: ebiten.KeyD,
-	0xE: ebiten.KeyE,
-	0xF: ebiten.KeyF,
+	0xC: ebiten.Key4,
+	// Row 2
+	0x4: ebiten.KeyQ,
+	0x5: ebiten.KeyW,
+	0x6: ebiten.KeyE,
+	0xD: ebiten.KeyR,
+	// Row 3
+	0x7: ebiten.KeyA,
+	0x8: ebiten.KeyS,
+	0x9: ebiten.KeyD,
+	0xE: ebiten.KeyF,
+	// Row 4
+	0xA: ebiten.KeyZ,
+	0x0: ebiten.KeyX,
+	0xB: ebiten.KeyC,
+	0xF: ebiten.KeyV,
 }
 
 func (i *Input) State(k chip8.Key) bool {
