@@ -77,8 +77,8 @@ func (c *Chip8) Tick() {
 	}
 }
 
-func (c *Chip8) Cycle() opcode {
-
+func (c *Chip8) Cycle() (opcode, uint16) {
+	pc := c.pc
 	op := opcode(binary.BigEndian.Uint16(c.m[c.pc : c.pc+2]))
 
 	c.next()
@@ -173,7 +173,7 @@ func (c *Chip8) Cycle() opcode {
 		panic(fmt.Errorf("unrecognised opcode %x", op))
 	}
 
-	return op
+	return op, pc
 }
 
 func (c *Chip8) opLdVxVy(vx, vy uint8) {
@@ -193,28 +193,27 @@ func (c *Chip8) opXorVxVy(vx, vy uint8) {
 }
 
 func (c *Chip8) opAddVxVy(vx, vy uint8) {
-	val := uint16(c.r[vx]) + uint16(c.r[vy])
-	c.carry(val > 0xFF)
-	c.r[vx] = uint8(val)
+	defer c.carry(uint16(c.r[vx])+uint16(c.r[vy]) > 0xFF)
+	c.r[vx] += c.r[vy]
 }
 
 func (c *Chip8) opSubVxVy(vx, vy uint8) {
-	c.carry(c.r[vx] > c.r[vy])
+	defer c.carry(c.r[vx] > c.r[vy])
 	c.r[vx] -= c.r[vy]
 }
 
 func (c *Chip8) opShrVx(vx uint8) {
-	c.carry(c.r[vx]&0x01 == 0x01)
+	defer c.carry(c.r[vx]&0x01 == 0x01)
 	c.r[vx] >>= 1
 }
 
 func (c *Chip8) opSubnVxVy(vx, vy uint8) {
-	c.carry(c.r[vy] > c.r[vx])
+	defer c.carry(c.r[vy] > c.r[vx])
 	c.r[vx] = c.r[vy] - c.r[vx]
 }
 
 func (c *Chip8) opShlVx(vx uint8) {
-	c.carry(c.r[vx]&0x80 == 0x80)
+	defer c.carry(c.r[vx]&0x80 == 0x80)
 	c.r[vx] <<= 1
 }
 

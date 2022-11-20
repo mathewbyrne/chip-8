@@ -6,15 +6,16 @@ import (
 )
 
 type Runner interface {
-	Close()
 	Pause()
 	Step()
+	Close()
 }
 
 type runner chan uint
 
 const (
-	CMD_PAUSE uint = iota
+	CMD_START uint = iota
+	CMD_PAUSE
 	CMD_STEP
 	CMD_CLOSE
 )
@@ -39,6 +40,12 @@ func Run(c *Chip8) runner {
 	cycle := time.NewTicker(time.Second / 1000)
 	timers := time.NewTicker(time.Second / 60)
 
+	doCycle := func() {
+		op, pc := c.Cycle()
+		fmt.Printf("%04X [%04X] %s\n", pc, uint16(op), op)
+		fmt.Printf("%s\n", c)
+	}
+
 	go func() {
 		for {
 			select {
@@ -46,9 +53,7 @@ func Run(c *Chip8) runner {
 				c.Tick()
 			case <-cycle.C:
 				if !paused {
-					op := c.Cycle()
-					fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
-					fmt.Printf("%s\n", c)
+					doCycle()
 				}
 			case cmd := <-r:
 				switch cmd {
@@ -56,9 +61,7 @@ func Run(c *Chip8) runner {
 					paused = !paused
 				case CMD_STEP:
 					if paused {
-						op := c.Cycle()
-						fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
-						fmt.Printf("%s\n", c)
+						doCycle()
 					}
 				case CMD_CLOSE:
 					cycle.Stop()
