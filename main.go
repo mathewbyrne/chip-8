@@ -20,6 +20,9 @@ func (g *Game) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		g.r.Pause()
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		g.r.Step()
+	}
 	return nil
 }
 

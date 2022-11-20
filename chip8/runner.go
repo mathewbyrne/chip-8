@@ -13,9 +13,11 @@ type Runner interface {
 
 type runner chan uint
 
-const CMD_PAUSE = 1
-const CMD_STEP = 2
-const CMD_CLOSE = 3
+const (
+	CMD_PAUSE uint = iota
+	CMD_STEP
+	CMD_CLOSE
+)
 
 func (r runner) Close() {
 	r <- CMD_CLOSE
