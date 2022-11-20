@@ -19,9 +19,9 @@ const (
 	OP_XOR_VX_VY        uint = 0x8003_F00F
 	OP_ADD_VX_VY        uint = 0x8004_F00F
 	OP_SUB_VX_VY        uint = 0x8005_F00F
-	OP_SHR_VX           uint = 0x8006_F00F
+	OP_SHR_VX_VY        uint = 0x8006_F00F
 	OP_SUBN_VX_VY       uint = 0x8007_F00F
-	OP_SHL_VX           uint = 0x800E_F00F
+	OP_SHL_VX_VY        uint = 0x800E_F00F
 	OP_SNE_VX_VY        uint = 0x9000_F000
 	OP_LD_I_ADDR        uint = 0xA000_F000
 	OP_JP_V0_ADDR       uint = 0xB000_F000
@@ -101,12 +101,12 @@ func (op opcode) String() string {
 		return fmt.Sprintf("ADD_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_SUB_VX_VY) {
 		return fmt.Sprintf("SUB_VX_VY %x %x", op.vx(), op.vy())
-	} else if op.equal(OP_SHR_VX) {
-		return fmt.Sprintf("SHR_VX %x %x", op.vx(), op.vy())
+	} else if op.equal(OP_SHR_VX_VY) {
+		return fmt.Sprintf("SHR_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_SUBN_VX_VY) {
 		return fmt.Sprintf("SUBN_VX_VY %x %x", op.vx(), op.vy())
-	} else if op.equal(OP_SHL_VX) {
-		return fmt.Sprintf("SHL_VX %x %x", op.vx(), op.vy())
+	} else if op.equal(OP_SHL_VX_VY) {
+		return fmt.Sprintf("SHL_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_SNE_VX_VY) {
 		return fmt.Sprintf("SNE_VX_VY %x %x", op.vx(), op.vy())
 	} else if op.equal(OP_LD_I_ADDR) {

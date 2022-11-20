@@ -124,12 +124,12 @@ func (c *Chip8) Cycle() (opcode, uint16) {
 		c.opAddVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_SUB_VX_VY) {
 		c.opSubVxVy(op.vx(), op.vy())
-	} else if op.equal(OP_SHR_VX) {
-		c.opShrVx(op.vx())
+	} else if op.equal(OP_SHR_VX_VY) {
+		c.opShrVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_SUBN_VX_VY) {
 		c.opSubnVxVy(op.vx(), op.vy())
-	} else if op.equal(OP_SHL_VX) {
-		c.opShlVx(op.vx())
+	} else if op.equal(OP_SHL_VX_VY) {
+		c.opShlVxVy(op.vx(), op.vy())
 	} else if op.equal(OP_SNE_VX_VY) {
 		if c.r[op.vx()] != c.r[op.vy()] {
 			c.next()
@@ -205,9 +205,9 @@ func (c *Chip8) opSubVxVy(vx, vy uint8) {
 	c.r[vx] -= c.r[vy]
 }
 
-func (c *Chip8) opShrVx(vx uint8) {
-	defer c.carry(c.r[vx]&0x01 == 0x01)
-	c.r[vx] >>= 1
+func (c *Chip8) opShrVxVy(vx, vy uint8) {
+	defer c.carry(c.r[vy]&0x01 == 0x01)
+	c.r[vx] = c.r[vy] >> 1
 }
 
 func (c *Chip8) opSubnVxVy(vx, vy uint8) {
@@ -215,9 +215,9 @@ func (c *Chip8) opSubnVxVy(vx, vy uint8) {
 	c.r[vx] = c.r[vy] - c.r[vx]
 }
 
-func (c *Chip8) opShlVx(vx uint8) {
-	defer c.carry(c.r[vx]&0x80 == 0x80)
-	c.r[vx] <<= 1
+func (c *Chip8) opShlVxVy(vx, vy uint8) {
+	defer c.carry(c.r[vy]&0x80 == 0x80)
+	c.r[vx] = c.r[vy] << 1
 }
 
 func (c *Chip8) opLdVxI(vx uint8) {
