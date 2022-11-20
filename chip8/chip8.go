@@ -181,14 +181,17 @@ func (c *Chip8) opLdVxVy(vx, vy uint8) {
 }
 
 func (c *Chip8) opOrVxVy(vx, vy uint8) {
+	defer c.carry(false)
 	c.r[vx] |= c.r[vy]
 }
 
 func (c *Chip8) opAndVxVy(vx, vy uint8) {
+	defer c.carry(false)
 	c.r[vx] &= c.r[vy]
 }
 
 func (c *Chip8) opXorVxVy(vx, vy uint8) {
+	defer c.carry(false)
 	c.r[vx] ^= c.r[vy]
 }
 
