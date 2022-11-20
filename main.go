@@ -11,7 +11,7 @@ import (
 )
 
 type Game struct {
-	r      *chip8.Runner
+	r      chip8.Runner
 	f      *chip8.FrameBuffer
 	paused bool
 }
@@ -59,13 +59,13 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%v", err)
 	}
 
-	r := &chip8.Runner{}
+	r := chip8.Run(c)
+	defer r.Close()
 
 	ebiten.SetWindowSize(640, 320)
 	ebiten.SetWindowTitle(os.Args[1])
 	ebiten.SetScreenClearedEveryFrame(false)
 
-	go r.Run(c)
 	if err := ebiten.RunGame(&Game{r, c.FrameBuffer(), false}); err != nil {
 		log.Fatal(err)
 	}

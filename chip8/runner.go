@@ -2,37 +2,71 @@ package chip8
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
-type Runner struct {
-	mu     sync.Mutex
-	paused bool
+type Runner interface {
+	Close()
+	Pause()
+	Step()
 }
 
-func (r *Runner) Pause() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.paused = !r.paused
+type runner chan uint
+
+const CMD_PAUSE = 1
+const CMD_STEP = 2
+const CMD_CLOSE = 3
+
+func (r runner) Close() {
+	r <- CMD_CLOSE
 }
 
-func (r *Runner) Run(c *Chip8) {
-	cycle := time.NewTicker(time.Second / 500)
-	defer cycle.Stop()
+func (r runner) Pause() {
+	r <- CMD_PAUSE
+}
+
+func (r runner) Step() {
+	r <- CMD_STEP
+}
+
+// Run runs a CHIP-8 chip as a go routine and returns a struct that can interface to the running simulation.
+func Run(c *Chip8) runner {
+	r := make(runner)
+
+	paused := false
+	cycle := time.NewTicker(time.Second / 1000)
 	timers := time.NewTicker(time.Second / 60)
-	defer timers.Stop()
 
-	for {
-		if !r.paused {
+	go func() {
+		for {
 			select {
 			case <-timers.C:
 				c.Tick()
 			case <-cycle.C:
-				op := c.Cycle()
-				fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
-				fmt.Printf("%s\n", c)
+				if !paused {
+					op := c.Cycle()
+					fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
+					fmt.Printf("%s\n", c)
+				}
+			case cmd := <-r:
+				switch cmd {
+				case CMD_PAUSE:
+					paused = !paused
+				case CMD_STEP:
+					if paused {
+						op := c.Cycle()
+						fmt.Printf("%04X [%04X] %s\n", c.pc, uint16(op), op)
+						fmt.Printf("%s\n", c)
+					}
+				case CMD_CLOSE:
+					cycle.Stop()
+					timers.Stop()
+					return
+				}
 			}
 		}
-	}
+
+	}()
+
+	return r
 }
