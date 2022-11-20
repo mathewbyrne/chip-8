@@ -34,9 +34,6 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 	var collision bool
 	li := (x >> 3) + (8 * y)
 	ri := li + 1
-	if (ri % 8) == 0 {
-		ri -= 8
-	}
 	offset := x % 8
 
 	for i := range sprite {
@@ -47,7 +44,7 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 		}
 		f.b[li] = f.b[li] ^ ls
 
-		if offset > 0 {
+		if offset > 0 && ri%8 != 0 {
 			rs := sprite[i] << (8 - offset)
 			if !collision {
 				collision = (f.b[ri] & rs) > 0
@@ -55,8 +52,9 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 			f.b[ri] = f.b[ri] ^ rs
 		}
 
-		// uint8 will have them wrap automatically back to the opposite side in the correct position.  This isn't good programming,
-		// just a coincidence (or nice property I guess) of the size of the chip-8 framebuffer.
+		if uint16(li)+8 > 255 {
+			break
+		}
 		li += 8
 		ri += 8
 	}
