@@ -40,6 +40,8 @@ const (
 	OP_LD_I_VX          uint = 0xF065_F0FF
 )
 
+const OP_WIDTH = 2
+
 type opcode uint16
 
 func (o opcode) equal(code uint) bool {

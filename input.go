@@ -1,13 +1,9 @@
 package main
 
 import (
-	"time"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/mathewbyrne/chip-8/chip8"
 )
-
-type Input struct{}
 
 var keyMap = map[chip8.Key]ebiten.Key{
 	// Row 1
@@ -30,21 +26,4 @@ var keyMap = map[chip8.Key]ebiten.Key{
 	0x0: ebiten.KeyX,
 	0xB: ebiten.KeyC,
 	0xF: ebiten.KeyV,
-}
-
-func (i *Input) State(k chip8.Key) bool {
-	return ebiten.IsKeyPressed(keyMap[k])
-}
-
-func (i *Input) Wait() chip8.Key {
-	ticker := time.NewTicker(time.Microsecond * 17) // ~60Hz poll
-	defer ticker.Stop()
-	for {
-		<-ticker.C
-		for k := range keyMap {
-			if ebiten.IsKeyPressed(keyMap[k]) {
-				return k
-			}
-		}
-	}
 }

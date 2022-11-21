@@ -52,6 +52,8 @@ func (f *FrameBuffer) draw(sprite []byte, x, y uint8) bool {
 			f.b[ri] = f.b[ri] ^ rs
 		}
 
+		// do not wrap around to the top if the sprite is drawn at the bottom of the bounds. Wrapping only occurs if the sprite
+		// is explicitly drawn past the bounds.
 		if uint16(li)+8 > 255 {
 			break
 		}

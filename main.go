@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -16,6 +15,14 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
+	var m uint16
+	for k, e := range keyMap {
+		if ebiten.IsKeyPressed(e) {
+			m |= 1 << k
+		}
+	}
+	g.r.SetKeyMap(m)
+
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		g.r.Pause()
 	}
@@ -56,9 +63,9 @@ func main() {
 		log.Fatalf("could not open rom file for reading: %v", err)
 	}
 
-	c, err := chip8.NewChip8(f, &Input{})
+	c, err := chip8.New(f)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
+		log.Fatalf("%v", err)
 	}
 
 	r := chip8.Run(c)
